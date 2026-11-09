@@ -1,0 +1,112 @@
+[
+  {
+    "id": "eval_001",
+    "question": "URL命名应该用下划线还是短横线？",
+    "ground_truth": "URL命名应全部使用小写字母，多个单词之间使用短横线（-）连接，禁止使用下划线或驼峰命名。",
+    "contexts": [
+      "2.2 命名规则：全部使用小写字母；多个单词之间使用短横线（-）连接，禁止使用下划线或驼峰；正确示例：/user-profiles；错误示例：/userProfiles、/user_profiles。"
+    ],
+    "source_section": "2.2 命名规则"
+  },
+  {
+    "id": "eval_002",
+    "question": "DELETE请求应该返回什么状态码？",
+    "ground_truth": "DELETE请求成功通常返回204 No Content。",
+    "contexts": [
+      "3.2 方法使用细则：DELETE请求：通常返回204 No Content。",
+      "6.1 2xx：成功：204 No Content 用于 DELETE 成功，或 PUT 无内容返回。"
+    ],
+    "source_section": "3.2 方法使用细则 / 6.1 2xx"
+  },
+  {
+    "id": "eval_003",
+    "question": "API版本号应该放在哪里？",
+    "ground_truth": "版本号应放在URL路径第一段，格式为v1、v2、v3等，例如/v1/users、/v2/orders。",
+    "contexts": [
+      "2.4 版本管理：版本号放在URL路径第一段；格式：v1、v2、v3；示例：/v1/users、/v2/orders。"
+    ],
+    "source_section": "2.4 版本管理"
+  },
+  {
+    "id": "eval_004",
+    "question": "分页参数page_size最大是多少？",
+    "ground_truth": "单次查询默认page_size ≤ 100。",
+    "contexts": [
+      "8.2 数据量限制：单次查询默认page_size ≤ 100；单次创建/更新批量 ≤ 500条；请求体大小 ≤ 10MB。"
+    ],
+    "source_section": "8.2 数据量限制"
+  },
+  {
+    "id": "eval_005",
+    "question": "如何实现接口的幂等性？",
+    "ground_truth": "POST创建接口支持幂等键（Idempotency-Key）。客户端在Header中携带Idempotency-Key: {UUID}，服务端缓存幂等键24小时，相同key返回首次结果。",
+    "contexts": [
+      "7.4 幂等性保障：POST创建接口支持幂等键（Idempotency-Key）；Header：Idempotency-Key: {UUID}；服务端缓存幂等键24小时，相同key返回首次结果。"
+    ],
+    "source_section": "7.4 幂等性保障"
+  },
+  {
+    "id": "eval_006",
+    "question": "敏感信息在响应中应该如何处理？",
+    "ground_truth": "响应中不返回密码、身份证号等敏感字段；信用卡号等需要脱敏显示，例如****1234。同时禁止在URL中传递密码、token、密钥。",
+    "contexts": [
+      "7.2 敏感信息保护：禁止在URL中传递密码、token、密钥；响应中不返回密码、身份证号等敏感字段；信用卡号等脱敏显示：****1234。"
+    ],
+    "source_section": "7.2 敏感信息保护"
+  },
+  {
+    "id": "eval_007",
+    "question": "资源集合应该使用什么命名形式？",
+    "ground_truth": "资源集合应使用名词复数形式。正确示例包括/users、/orders、/products；错误示例包括/getUser、/user、/addOrder。",
+    "contexts": [
+      "2.3 资源命名：使用名词复数形式表示资源集合；正确：/users、/orders、/products；错误：/getUser、/user、/addOrder。"
+    ],
+    "source_section": "2.3 资源命名"
+  },
+  {
+    "id": "eval_008",
+    "question": "批量删除应该使用什么HTTP方法和路径？",
+    "ground_truth": "批量删除（软删除）应使用POST + 特殊路径，例如POST /v1/users/batch/delete，Body为{\"user_ids\": [1,2,3]}，不使用批量DELETE。",
+    "contexts": [
+      "3.3 批量操作：使用POST + 特殊路径，不使用批量DELETE；批量删除（软删除）：POST /v1/users/batch/delete；Body: {\"user_ids\": [1,2,3]}。"
+    ],
+    "source_section": "3.3 批量操作"
+  },
+  {
+    "id": "eval_009",
+    "question": "API响应中的日期时间应该使用什么格式？",
+    "ground_truth": "统一使用ISO 8601格式，例如2024-01-15T14:30:00Z（UTC时间），或2024-01-15T22:30:00+08:00（带时区）。",
+    "contexts": [
+      "4.3 日期时间格式：统一使用ISO 8601格式；示例：2024-01-15T14:30:00Z（UTC时间）；示例：2024-01-15T22:30:00+08:00（带时区）。"
+    ],
+    "source_section": "4.3 日期时间格式"
+  },
+  {
+    "id": "eval_010",
+    "question": "枚举值应该使用字符串还是数字？",
+    "ground_truth": "枚举值应使用字符串表示，禁止使用数字。正确示例：{\"status\": \"active\"}；错误示例：{\"status\": 1}。",
+    "contexts": [
+      "4.4 枚举值规范：使用字符串表示，禁止使用数字；正确：{\"status\": \"active\"}；错误：{\"status\": 1}。"
+    ],
+    "source_section": "4.4 枚举值规范"
+  },
+  {
+    "id": "eval_011",
+    "question": "分页列表接口的响应结构需要包含哪些分页字段？",
+    "ground_truth": "分页列表接口的data中需要包含items和pagination。pagination包含page、page_size、total、total_pages。",
+    "contexts": [
+      "5.2 分页响应结构：列表接口需要额外包含分页信息：data.items、data.pagination；pagination包含page、page_size、total、total_pages。"
+    ],
+    "source_section": "5.2 分页响应结构"
+  },
+  {
+    "id": "eval_012",
+    "question": "哪些API变更需要升级大版本？",
+    "ground_truth": "删除或重命名字段、修改字段类型、修改字段含义、修改错误码含义属于不兼容变更，需要升级大版本；新增字段则不改变版本号。",
+    "contexts": [
+      "2.4 版本升级规则：新增字段：不改变版本号；删除或重命名字段：升级大版本；修改字段类型：升级大版本。",
+      "9.1 向后兼容规则：新增字段：兼容；删除字段：不兼容，需升级版本；修改字段类型：不兼容，需升级版本；修改字段含义：不兼容，需升级版本；修改错误码含义：不兼容，需升级版本。"
+    ],
+    "source_section": "2.4 版本管理 / 9.1 向后兼容规则"
+  }
+]

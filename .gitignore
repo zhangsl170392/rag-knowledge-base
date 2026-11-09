@@ -1,0 +1,25 @@
+# 环境变量与密钥
+.env
+.env.*
+!.env.example
+
+# Python 缓存
+__pycache__/
+*.pyc
+*.pyo
+
+# 虚拟环境
+.venv/
+venv/
+
+# 可重建数据 / 较大二进制文件
+data/processed/
+
+# 日志
+*.log
+
+# Jupyter 检查点
+.ipynb_checkpoints/
+
+# IDE 配置
+.idea/

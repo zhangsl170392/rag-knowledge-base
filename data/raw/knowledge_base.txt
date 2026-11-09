@@ -1,0 +1,324 @@
+# API接口设计规范
+
+## 1. 概述
+
+### 1.1 规范目的
+本规范旨在统一团队API接口设计风格，提高接口的可维护性、可读性和一致性，降低前后端协作成本。
+
+### 1.2 适用范围
+本规范适用于所有RESTful风格的公开API接口设计，包括内部系统和对外服务。
+
+### 1.3 核心原则
+- 简单明了：URL和参数命名直观易懂
+- 一致性：同一资源在不同接口中表达方式一致
+- 无状态：每个请求包含完整信息，不依赖服务端会话
+- 可预测：遵循HTTP语义，用户可凭经验推断行为
+
+## 2. URL设计规范
+
+### 2.1 基础格式
+https://api.example.com/{version}/{resource}/{id}/{sub-resource}
+
+text
+
+### 2.2 命名规则
+- 全部使用小写字母
+- 多个单词之间使用短横线（-）连接，禁止使用下划线或驼峰
+- 正确示例：/user-profiles
+- 错误示例：/userProfiles、/user_profiles
+
+### 2.3 资源命名
+- 使用名词复数形式表示资源集合
+- 正确：/users、/orders、/products
+- 错误：/getUser、/user、/addOrder
+
+### 2.4 版本管理
+- 版本号放在URL路径第一段
+- 格式：v1、v2、v3
+- 示例：/v1/users、/v2/orders
+- 版本升级规则：
+  - 新增字段：不改变版本号
+  - 删除或重命名字段：升级大版本
+  - 修改字段类型：升级大版本
+
+### 2.5 层级深度
+- 资源嵌套深度不超过3层
+- 正确：/v1/users/123/orders（用户的订单）
+- 可接受：/v1/users/123/orders/456/items（订单的商品）
+- 错误：/v1/users/123/orders/456/items/789/details
+
+### 2.6 过滤、排序、分页
+使用query参数实现，不改变URL路径结构：
+分页
+/v1/users?page=1&page_size=20
+
+过滤
+/v1/users?status=active&role=admin
+
+排序
+/v1/users?sort=-created_at,asc
+
+字段选择（只返回指定字段）
+/v1/users?fields=id,name,email
+
+组合使用
+/v1/users?status=active&page=2&sort=-created_at
+
+text
+
+## 3. HTTP方法规范
+
+### 3.1 方法定义
+
+| 方法 | 语义 | 幂等性 | 安全性 | 示例 |
+|------|------|--------|--------|------|
+| GET | 获取资源 | 是 | 是 | GET /v1/users/123 |
+| POST | 创建资源 | 否 | 否 | POST /v1/users |
+| PUT | 完整更新 | 是 | 否 | PUT /v1/users/123 |
+| PATCH | 部分更新 | 否 | 否 | PATCH /v1/users/123 |
+| DELETE | 删除资源 | 是 | 否 | DELETE /v1/users/123 |
+
+### 3.2 方法使用细则
+- GET请求：不应修改服务端状态，参数放在URL或Header中
+- POST请求：创建资源，服务端生成资源ID
+- PUT请求：必须提供完整资源对象，缺失字段会被重置为默认值
+- PATCH请求：只提供需要修改的字段
+- DELETE请求：通常返回204 No Content
+
+### 3.3 批量操作
+使用POST + 特殊路径，不使用批量DELETE：
+批量创建
+POST /v1/users/batch
+Body: {"users": [...]}
+
+批量更新
+PATCH /v1/users/batch
+Body: {"users": [...]}
+
+批量删除（软删除）
+POST /v1/users/batch/delete
+Body: {"user_ids": [1,2,3]}
+
+text
+
+## 4. 请求规范
+
+### 4.1 请求头（Request Headers）
+
+| Header | 必填 | 说明 | 示例 |
+|--------|------|------|------|
+| Content-Type | 是 | 请求体格式 | application/json |
+| Accept | 是 | 期望的响应格式 | application/json |
+| Authorization | 是 | 认证令牌 | Bearer eyJhbGci... |
+| X-Request-Id | 否 | 请求追踪ID | 550e8400-e29b-41d4-a716-446655440000 |
+| Accept-Language | 否 | 语言偏好 | zh-CN, en-US |
+
+### 4.2 参数传递规则
+- GET/DELETE：参数放在URL query或路径变量中
+- POST/PUT/PATCH：复杂参数放在JSON Body中
+- 文件上传：使用multipart/form-data格式
+
+### 4.3 日期时间格式
+- 统一使用ISO 8601格式
+- 示例：2024-01-15T14:30:00Z（UTC时间）
+- 示例：2024-01-15T22:30:00+08:00（带时区）
+
+### 4.4 枚举值规范
+- 使用字符串表示，禁止使用数字
+- 正确：{"status": "active"}
+- 错误：{"status": 1}
+
+## 5. 响应规范
+
+### 5.1 统一响应结构
+所有API响应使用统一的JSON结构：
+
+```json
+{
+  "code": 200,
+  "message": "success",
+  "data": {},
+  "timestamp": 1705305600000,
+  "request_id": "550e8400-e29b-41d4-a716-446655440000"
+}
+5.2 分页响应结构
+列表接口需要额外包含分页信息：
+
+json
+{
+  "code": 200,
+  "message": "success",
+  "data": {
+    "items": [],
+    "pagination": {
+      "page": 1,
+      "page_size": 20,
+      "total": 100,
+      "total_pages": 5
+    }
+  },
+  "timestamp": 1705305600000,
+  "request_id": "550e8400-e29b-41d4-a716-446655440000"
+}
+5.3 错误响应结构
+json
+{
+  "code": 400,
+  "message": "参数校验失败",
+  "errors": [
+    {
+      "field": "email",
+      "message": "邮箱格式不正确"
+    }
+  ],
+  "timestamp": 1705305600000,
+  "request_id": "550e8400-e29b-41d4-a716-446655440000"
+}
+6. HTTP状态码规范
+6.1 2xx：成功
+状态码	含义	使用场景
+200	OK	GET/PUT/PATCH 成功
+201	Created	POST 创建成功，返回新资源ID
+204	No Content	DELETE 成功，或PUT无内容返回
+6.2 4xx：客户端错误
+状态码	含义	使用场景
+400	Bad Request	参数缺失、格式错误
+401	Unauthorized	未认证或token过期
+403	Forbidden	已认证但无权限
+404	Not Found	资源不存在
+409	Conflict	资源冲突（如重复创建）
+429	Too Many Requests	触发限流
+6.3 5xx：服务端错误
+状态码	含义	使用场景
+500	Internal Server Error	服务器内部错误
+502	Bad Gateway	网关错误
+503	Service Unavailable	服务不可用（如维护中）
+504	Gateway Timeout	网关超时
+7. 安全规范
+7.1 认证方式
+推荐使用JWT（JSON Web Token）
+
+Header格式：Authorization: Bearer {token}
+
+Token有效期：access_token 2小时，refresh_token 7天
+
+7.2 敏感信息保护
+禁止在URL中传递密码、token、密钥
+
+响应中不返回密码、身份证号等敏感字段
+
+信用卡号等脱敏显示：****1234
+
+7.3 限流策略
+按API Key或用户ID限流
+
+默认限制：1000次/分钟
+
+超出返回429状态码，Header携带重试时间：
+
+X-RateLimit-Limit: 1000
+
+X-RateLimit-Remaining: 0
+
+X-RateLimit-Reset: 1705305660
+
+7.4 幂等性保障
+POST创建接口支持幂等键（Idempotency-Key）
+
+Header：Idempotency-Key: {UUID}
+
+服务端缓存幂等键24小时，相同key返回首次结果
+
+8. 性能规范
+8.1 响应时间要求
+P99响应时间 < 500ms
+
+慢查询（>1s）需要优化或异步处理
+
+8.2 数据量限制
+单次查询默认page_size ≤ 100
+
+单次创建/更新批量 ≤ 500条
+
+请求体大小 ≤ 10MB
+
+8.3 压缩支持
+支持gzip压缩响应
+
+Client携带Accept-Encoding: gzip
+
+9. 变更与兼容性
+9.1 向后兼容规则
+新增字段：兼容
+
+删除字段：不兼容，需升级版本
+
+修改字段类型：不兼容，需升级版本
+
+修改字段含义：不兼容，需升级版本
+
+修改错误码含义：不兼容，需升级版本
+
+9.2 废弃机制
+接口废弃提前3个月通知
+
+响应Header标识：X-API-Deprecated: true
+
+响应Header携带废弃时间：X-API-Deprecated-At: 2024-12-31
+
+9.3 变更日志
+每次API变更必须更新文档
+
+维护CHANGELOG.md记录所有变更
+
+10. 文档规范
+10.1 必需内容
+接口路径和HTTP方法
+
+请求参数说明（类型、必填、示例）
+
+响应示例（成功和失败）
+
+错误码说明
+
+认证方式说明
+
+10.2 文档格式
+推荐使用OpenAPI 3.0规范（Swagger）
+
+提供在线可调试文档
+
+10.3 示例值规范
+字符串示例："string"
+
+数字示例：0 或 100
+
+ID示例：123
+
+UUID示例："123e4567-e89b-12d3-a456-426614174000"
+
+时间示例："2024-01-15T14:30:00Z"
+
+text
+
+---
+
+### 使用说明
+
+1. **复制以上内容**，保存为 `knowledge_base.txt`
+2. **确保编码为UTF-8**（VS Code默认即为UTF-8）
+3. **文档长度**：约2200字符，符合2-5页要求
+4. **结构清晰**：10个章节，层级分明，便于后续切分和检索
+
+### 后续可测试的查询问题
+
+当你在第18-20天搭建完RAG系统后，可以尝试问这些问题：
+
+- "URL命名应该用下划线还是短横线？"
+- "DELETE请求应该返回什么状态码？"
+- "API版本号应该放在哪里？"
+- "分页参数page_size最大是多少？"
+- "如何实现接口的幂等性？"
+- "敏感信息在响应中应该如何处理？"
+
+这些问题都能从文档中检索到准确答案，方便你验证RAG效果。

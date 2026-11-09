@@ -1,0 +1,26 @@
+# ==========================================
+# RAG 知识底座 - 核心依赖清单
+# 基于 Python >= 3.10 测试
+# ==========================================
+
+# --- 1. 框架与核心组件 ---
+langchain-core==1.7.1
+langchain-community==0.3.30
+langchain-ollama==1.1.0
+langchain-chroma==1.1.0
+langchain-text-splitters==1.1.3
+chromadb==1.5.9
+
+# --- 2. 评估与生成 ---
+ragas==0.4.3
+
+# --- 3. API 客户端与模型接入 ---
+# 核心修复：强制降级 openai。
+# 你的 lock 环境里是 3.46.0，这会破坏 langchain-openai 和 instructor。
+openai==1.109.1
+litellm==1.75.3
+
+# --- 4. 数据处理与解析 ---
+pandas==3.1.0
+pypdf==6.21.4
+python-dotenv==1.2.4
