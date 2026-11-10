@@ -18,7 +18,7 @@ ragas==0.4.3
 # 核心修复：强制降级 openai。
 # 你的 lock 环境里是 3.46.0，这会破坏 langchain-openai 和 instructor。
 openai==1.109.1
-litellm==1.75.3
+litellm[proxy]==1.75.3
 
 # --- 4. 数据处理与解析 ---
 pandas==3.1.0

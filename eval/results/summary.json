@@ -1,13 +1,13 @@
 {
   "n_samples": 12,
-  "llm_model": "modelscope.cn/Qwen/Qwen2.5-3B-Instruct-GGUF:latest",
+  "llm_model": "modelscope.cn/Qwen/Qwen2.5-7B-Instruct-GGUF:latest",
   "embedding_model": "qwen3-embedding:0.6b",
   "top_k": 3,
   "score_threshold": 0.3,
   "metrics": {
-    "faithfulness": 0.4028,
-    "answer_relevancy": 0.8864,
-    "context_precision": 0.7986,
-    "context_recall": 0.8333
+    "faithfulness": 0.8333,
+    "answer_relevancy": 0.774,
+    "context_precision": 0.8681,
+    "context_recall": 0.9833
   }
 }

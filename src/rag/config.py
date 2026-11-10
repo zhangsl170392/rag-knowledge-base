@@ -17,17 +17,17 @@ def _env_path(key: str, default: Path) -> Path:
     return path if path.is_absolute() else BASE_DIR / path
 
 # 数据路径配置
-RAW_DATA_DIR = _env_path(os.getenv("RAW_DATA_DIR", BASE_DIR / "data" / "raw"))
-VECTOR_STORE_DIR = _env_path(os.getenv("VECTOR_STORE_DIR", BASE_DIR / "data" / "processed" / "chroma_db"))
+RAW_DATA_DIR = _env_path("RAW_DATA_DIR", BASE_DIR / "data" / "raw")
+VECTOR_STORE_DIR = _env_path("VECTOR_STORE_DIR", BASE_DIR / "data" / "processed" / "chroma_db")
 
 # 文本切分配置
-CHUNK_SIZE = int(os.getenv("CHUNK_SIZE", "300"))
-CHUNK_OVERLAP = int(os.getenv("CHUNK_OVERLAP", "30"))
+CHUNK_SIZE = int(os.getenv("CHUNK_SIZE", "500"))
+CHUNK_OVERLAP = int(os.getenv("CHUNK_OVERLAP", "50"))
 
 # 模型配置 (Ollama)
 OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
 EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "qwen3-embedding:0.6b")
-LLM_MODEL = os.getenv("LLM_MODEL", "modelscope.cn/Qwen/Qwen2.5-3B-Instruct-GGUF:latest") # 用于评估时生成回答
+LLM_MODEL = os.getenv("LLM_MODEL", "modelscope.cn/Qwen/Qwen2.5-7B-Instruct-GGUF:latest") # 用于评估时生成回答
 
 # 向量库集合名称
 COLLECTION_NAME = "knowledge_base"
